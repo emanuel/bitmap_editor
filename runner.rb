@@ -1,3 +1,2 @@
 require './app/bitmap_editor'
-
-BitmapEditor.run
+BitmapEditor::REPL.run

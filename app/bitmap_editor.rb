@@ -1,7 +1,7 @@
 # Main Module of the BitmapEditor
 module BitmapEditor
-  # HELP TEXT is constant and freezed in memory for quick access
-  HELP_TEXT <<~EOS
+  # constants text messages
+  HELP_TEXT = <<~EOS
     ? - Help
     I M N - Create a new M x N image with all pixels coloured white (O).
     C - Clears the table, setting all pixels to white (O).
@@ -12,31 +12,41 @@ module BitmapEditor
     X - Terminate the session
   EOS
 
-  def self.run
-    @running = true
-    puts 'type ? for help'
-    while @running
-      print '> '
-      handle_input(gets.chomp)
+  GOODBYE_MSG = 'Goodbye!'
+  REPL_MSG = 'type ? for help'
+
+  # responsible for runing the REPL
+  module REPL
+    module_function
+
+    def run
+      @running = true
+      puts BitmapEditor::REPL_MSG
+      while @running
+        print '> '
+        Parser.parse(gets.chomp)
+      end
+    end
+
+    def exit
+      @running = false
     end
   end
 
-  private
+  # responsible for parsing the REPL comands
+  module Parser
+    module_function
 
-  def self.handle_input(input)
-    case input
-    when '?'
-      puts HELP_TEXT
-    when 'X'
-      exit_console
-    else
-      puts 'unrecognised command :('
+    def parse(input)
+      case input
+      when '?'
+        puts HELP_TEXT
+      when 'X'
+        puts GOODBYE_MSG
+        REPL.exit
+      else
+        puts 'unrecognised command :('
+      end
     end
   end
-
-  def self.exit_console
-    puts 'Goodbye!'
-    @running = false
-  end
-
 end
