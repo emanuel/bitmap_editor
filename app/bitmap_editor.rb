@@ -1,3 +1,4 @@
+require 'pry'
 # Main Module of the BitmapEditor
 module BitmapEditor
   # constants text messages
@@ -14,6 +15,9 @@ module BitmapEditor
 
   GOODBYE_MSG = 'Goodbye!'
   REPL_MSG = 'type ? for help'
+  ERROR_MSG = 'unrecognised command :('
+
+  PIXEL_LIMITS = 250
 
   # responsible for runing the REPL
   module REPL
@@ -24,29 +28,58 @@ module BitmapEditor
       puts BitmapEditor::REPL_MSG
       while @running
         print '> '
-        Parser.parse(gets.chomp)
+        result = Parser.parse(gets.chomp)
+        # input was parsed correctly then call its associated method
+        # with already validated params
+        result[:ok] ? send(result[:command], *result[:params]) : puts(ERROR_MSG)
       end
     end
 
     def exit
       @running = false
     end
+
+    def show_help(_params = {})
+      puts HELP_TEXT
+    end
   end
 
-  # responsible for parsing the REPL comands
+
+  # Parser Module
+  # responsible for parsing the commands
+  #
   module Parser
+    # Hash of valid commands known by the parser
+    # with a method name and number of possible params
+
+    COMMAND_LIST = { 'I' => [:create_image,            2],
+                     'C' => [:clear_the_table,         0],
+                     'L' => [:colours_the_pixel,       3],
+                     'V' => [:draw_vertical_segment,   4],
+                     'H' => [:draw_horizontal_segment, 4],
+                     'S' => [:show_contents_image,     0],
+                     '?' => [:show_help,               0],
+                     'X' => [:exit,                    0] }
+
     module_function
 
     def parse(input)
-      case input
-      when '?'
-        puts HELP_TEXT
-      when 'X'
-        puts GOODBYE_MSG
-        REPL.exit
-      else
-        puts 'unrecognised command :('
-      end
+      # if the first char of the input is a know command we process
+      # if not the parser returns an error
+      COMMAND_LIST[input[0]] ? process_command!(input) : { ok: false }
+    end
+
+    def process_command!(input)
+      params = input.split
+      command = params.shift
+      exact_number_of_supported_params = COMMAND_LIST.dig(command, 1)
+
+      return { ok: false } if params.size != exact_number_of_supported_params
+      return { ok: false } if params.any? { |p| p.to_i > PIXEL_LIMITS }
+
+      # return the correct method_name and validated params
+      { ok: true, command: COMMAND_LIST.dig(command, 0), params: params }
     end
   end
+
 end
