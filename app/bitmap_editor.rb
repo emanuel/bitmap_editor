@@ -50,7 +50,7 @@ module BitmapEditor
     #
 
     # Create image command
-    def create_image(m,n)
+    def create_image(m, n)
       @image = Image.new m.to_i, n.to_i
     end
 

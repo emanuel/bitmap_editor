@@ -18,12 +18,11 @@ module BitmapEditor
     module_function
 
     def parse(input)
-      # if the first char of the input is a know command we process
-      # if not the parser returns an error
-      COMMAND_LIST[input[0]] ? process_command(input) : { ok: false }
+      # process if the first char of the input is a known command otherwise return error
+      COMMAND_LIST[input[0]] ? parse_command(input) : { ok: false }
     end
 
-    def process_command(input)
+    def parse_command(input)
       params = input.split
       command = params.shift
       numeric_params = COMMAND_LIST.dig(command, 1)

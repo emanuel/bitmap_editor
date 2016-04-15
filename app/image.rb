@@ -23,25 +23,26 @@ module BitmapEditor
 
     # string representation of the image
     def show
-      @data.map{ |line| line.join }
+      @data.map(&:join)
     end
 
     # colorize one pixel
     def colorize(pixel, colour)
       validate_pixel(pixel)
-      pos_x, pos_y = (pixel.x - 1), (pixel.y - 1)
+      pos_x = pixel.x - 1
+      pos_y = pixel.y - 1
       @data[pos_y][pos_x] = colour
     end
 
     # drawing a vertical line : colx, row_y1, row_y2, colour
     def draw_vertical(col_x, row_y1, row_y2, colour)
-      list_of_pixels = (row_y1..row_y2).map { |p| Pixel.new(col_x,p) }
+      list_of_pixels = (row_y1..row_y2).map { |p| Pixel.new(col_x, p) }
       draw_line_of_pixels list_of_pixels, colour
     end
 
     # drawing an horizontal line : rowy, col_x1, col_x2, colour
     def draw_horizontal(row_y, col_x1, col_x2, colour)
-      list_of_pixels = (col_x1..col_x2).map { |p| Pixel.new(p,row_y) }
+      list_of_pixels = (col_x1..col_x2).map { |p| Pixel.new(p, row_y) }
       draw_line_of_pixels list_of_pixels, colour
     end
 
@@ -68,18 +69,17 @@ module BitmapEditor
     end
 
     def validate_pixel(pixel)
-      unless pixel.is_a?(Struct) && is_valid?(pixel)
-        fail ArgumentError, "pixel (#{pixel}) is outside the dimensions of this image"
-      end
+      return if valid?(pixel) && pixel.is_a?(Struct)
+      fail ArgumentError, "pixel (#{pixel}) is outside the dimensions of this image"
     end
 
-    def is_valid? pixel
+    def valid?(pixel)
       pixel.x.between?(1, @width) && pixel.y.between?(1, @height)
     end
 
     # colorize a line of pixels
     def draw_line_of_pixels(list_of_pixels, colour)
-      list_of_pixels.each { |pixel| colorize(pixel,colour) }
+      list_of_pixels.each { |pixel| colorize(pixel, colour) }
     end
   end
 end

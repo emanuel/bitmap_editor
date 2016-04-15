@@ -32,6 +32,22 @@ Pixel co-ordinates are a pair of integers:
 - **?** - Displays help text
 - **X** - Terminate the session
 
-### Implementation
+### Setting up
 
-TODO
+2.1) To run the tests there is a dependency on RSpec so please do:
+
+``` bash
+  bundle install
+```
+
+2.2) Start the REPL with:
+
+``` bash
+  ruby runner.rb
+```
+
+2.3) Run the specs with:
+
+``` bash
+  rspec spec
+```
